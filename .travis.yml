@@ -1,0 +1,26 @@
+dist: focal
+language: minimal
+
+env:
+- EMACS_VERSION: 26.3
+
+services:
+- docker
+
+before_install:
+- docker pull flycheck/emacs-cask:$EMACS_VERSION
+
+script:
+- emacs -Q -batch -f ert-run-tests-batch-and-exit -l eieio-test.el
+
+git:
+  depth: false
+  quiet: true
+branches:
+  only:
+  - master
+  - /^90\./
+notifications:
+  email:
+    on_success: always
+    on_failure: always

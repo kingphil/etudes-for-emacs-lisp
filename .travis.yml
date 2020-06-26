@@ -11,7 +11,7 @@ before_install:
 - docker pull flycheck/emacs-cask:$EMACS_VERSION
 
 script:
-- emacs -Q -batch -f ert-run-tests-batch-and-exit -l eieio-test.el
+- emacs -Q -batch -l pekobj-tests.el -f ert-run-tests-batch-and-exit
 
 git:
   depth: false

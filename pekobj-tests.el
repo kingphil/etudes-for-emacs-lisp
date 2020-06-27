@@ -25,6 +25,34 @@
   (let ((pekobj (pekobj-minimal)))
     (should (equal (echo pekobj "hellooooo!") "hellooooo!"))))
 
+(ert-deftest test-pekobj-basic-functionality ()
+  "Test for basic functionality"
+  (let ((pekobj (pekobj-minimal)))
+    (should (pekobj-minimal-p pekobj))))
+
+(defclass father ()
+  ((parent :initform "vader")))
+(cl-defmethod say ((vader father))
+  "No, *I* am your father!")
+
+(defclass mother ()
+  ((parent :initform "portman")))
+(cl-defmethod say ((portman mother))
+  "Pass me another slice of pear, sand boy.")
+
+(defclass luke-class (father mother) ())
+(defclass leia-class (mother father) ())
+
+(ert-deftest test-pekobj-inheritance ()
+  (let ((luke (luke-class))
+	(leia (leia-class)))
+    ;; "If my-baseclass and my-interface had slots with the same name, then the
+    ;; superclass showing up in the list first defines the slot attributes."
+    (should (equal (oref luke parent) "vader"))
+    (should (equal (oref leia parent) "portman"))
+    (should (string-prefix-p "No," (say luke)))
+    (should (string-prefix-p "Pass" (say leia)))))
+
 ;; object and tests for chapter 3.2"
 (defclass pekobj-slot-options ()
   ((no-initform :initarg :no-initform)

@@ -88,9 +88,17 @@
 (defclass pekobj-slot-options-accessor ()
   ((pek-init-arg :initarg :my-init-arg
 		 :initform "default"
-		 :accessor access-init-arg)))
+		 :accessor access-init-arg
+		 :writer write-init-arg
+		 :reader read-init-arg)))
 
 (ert-deftest test-pekobj-slot-options-accessor ()
   (let ((pekobj (pekobj-slot-options-accessor :my-init-arg "override")))
     (should (equal (access-init-arg pekobj) "override"))
-    (should (equal (oref pekobj pek-init-arg) "override"))))
+    (should (equal (oref pekobj pek-init-arg) "override"))
+    (write-init-arg pekobj "eieio")
+    (should (equal (read-init-arg pekobj) "eieio"))
+    (should (equal (access-init-arg pekobj) "eieio"))
+    (should (equal (oref pekobj pek-init-arg) "eieio"))))
+
+;; note: skipping :custom, :label, and :group (for now)

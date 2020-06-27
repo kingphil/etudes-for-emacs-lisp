@@ -167,3 +167,58 @@
 
 ;; note: skipping :custom-groups
 ;; also skipping :method-invocation-order, which controls multiple inheritance
+
+(ert-deftest test-pekobj-accessing-slots ()
+  ;; define this class as an "inner class" so that the oset-default does not explode subsequent test runs
+  (defclass pekobj-accessing-slots ()
+    ((name :initarg :name
+	   :initform "[anonymous]"
+	   :type string
+	   :documentation "The name of a person.")))
+  (let ((pekobj (pekobj-accessing-slots)))
+    (should (equal (oref-default pekobj-accessing-slots :name) "[anonymous]"))
+    (should (equal (oref pekobj :name) "[anonymous]"))
+    (should (equal (oref pekobj :name)
+		   ;; both 'name and :name work here, as seen below
+		   (slot-value pekobj :name)))
+    (oset-default pekobj-accessing-slots :name "[unknown]")
+    ;; existing instances have not changed
+    (should (equal (slot-value pekobj 'name) "[anonymous]"))
+    (let ((newobj (pekobj-accessing-slots)))
+      (should (equal (oref newobj :name) "[unknown]")))
+    ;; tests that the return value of oset is the value it sets
+    (should (equal (oset pekobj :name "Philip") "Philip"))
+    (should (equal (slot-value pekobj 'name) "Philip"))
+    ;; although unspecified in the docs, set-slot-value also returns the value it sets
+    (should (equal (set-slot-value pekobj ':name "pek") "pek"))
+    (should (equal (oref pekobj :name) "pek"))
+    (slot-makeunbound pekobj :name)
+    (should-error (equal (oref pekobj :name) nil) :type 'unbound-slot)
+    (should-not (slot-boundp pekobj :name))))
+
+(defclass pekobj-accessing-slots-slot-lists ()
+  ((mylist :initarg :mylist
+	 :initform '(this is a test)
+	 :type list)))
+
+;; appending to an object attribute that is a list must happen so frequently that this convenience was needed
+(ert-deftest test-pekobj-accessing-slots-slot-lists ()
+  (let ((pekobj (pekobj-accessing-slots-slot-lists)))
+    ;; the true value on the end is to instruct the method to append to the list
+    (object-add-to-list pekobj :mylist '(of the emergency system) t)
+    (should (equal (oref pekobj mylist)
+		   '(this is a test (of the emergency system))))
+    (object-remove-from-list pekobj :mylist '(of the emergency system))
+    (should (equal (oref pekobj mylist) '(this is a test)))))
+
+;; hard to imagine what this is for; aliasing? the example in the docs doesn't help much
+;; does not seem to offer much over 'oref', as seen in the last lines
+(ert-deftest test-pekobj-accessing-slots-with-slots ()
+  (let ((pekobj (pekobj-accessing-slots-slot-lists)))
+    (should (equal (with-slots (mylist) pekobj mylist) '(this is a test)))
+    (should (equal (with-slots ((alias mylist)) pekobj alias) '(this is a test)))
+    (with-slots ((alias mylist)) pekobj
+      (setq alias '(convenience feature)))
+    (should (equal (oref pekobj mylist) '(convenience feature)))
+    (oset pekobj mylist '(not exactly more difficult))
+    (should (equal (oref pekobj mylist) '(not exactly more difficult)))))

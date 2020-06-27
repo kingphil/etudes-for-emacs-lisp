@@ -34,7 +34,13 @@
 		:type symbol)
    (type-own-class :initarg :type-own-class
 		   ;; not a literal "my-class-name" as suggested in the docs
-		   :type pekobj-slot-options)))
+		   :type pekobj-slot-options)
+   ;; TODO: I don't understand where/how "alloc-instance" is used, considering I do understand
+   ;;   how "alloc-class" is referenced; why are they different?
+   (alloc-instance :initarg :alloc-instance
+		   :allocation :instance)
+   ;; "Class allocated slots do not need :initarg"
+   (alloc-class	:allocation :class)))
 
 (ert-deftest test-pekobj-slot-options-initform ()
   "chapter 3.2 slot options :initform"
@@ -68,3 +74,13 @@
 	 (luke (pekobj-slot-options-child :type-own-class vader))
 	 ;; a parent class can contain an instance of a child class
 	 (portman (pekobj-slot-options :type-own-class luke)))))
+
+(ert-deftest test-pekobj-slot-options-allocation ()
+  "chapter 3.2 slot options :allocation"
+  (let ((luke (pekobj-slot-options :alloc-instance "luke"))
+	(leia (pekobj-slot-options :alloc-instance "leia")))
+    (oset luke alloc-class "now leia!")
+    (should (equal (oref luke :alloc-instance) "luke"))
+    (should (equal (oref leia :alloc-instance) "leia"))
+    (should (equal (oref luke alloc-class) "now leia!"))
+    (should (equal (oref leia alloc-class) "now leia!"))))

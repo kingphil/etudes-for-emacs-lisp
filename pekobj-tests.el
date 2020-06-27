@@ -50,8 +50,21 @@
   (should (pekobj-slot-options :type-symbol 'this-is-fine))
   (should-error (pekobj-slot-options :type-symbol 2020) :type 'invalid-slot-type))
 
-;; no real test here; asserts that it doesn't error out (that I got the concept and syntax right)
 (ert-deftest test-pekobj-slot-options-type-my-class-name ()
   "chapter 3.2 slot options :type my-class-name"
   (let* ((pekobj-1 (pekobj-slot-options))
-	 (pekobj-2 (pekobj-slot-options :type-own-class pekobj-1)))))
+	 ;; no real test here; asserts that it doesn't error out (that I got the concept and syntax right)
+	 (pekobj-2 (pekobj-slot-options :type-own-class pekobj-1))
+	 (minimal (pekobj-minimal)))
+    (should-error (pekobj-slot-options :type-own-class 2020) :type 'invalid-slot-type)
+    (should-error (pekobj-slot-options :type-own-class minimal) :type 'invalid-slot-type)))
+
+(defclass pekobj-slot-options-child (pekobj-slot-options) ())
+
+(ert-deftest test-pekobj-slot-options-type-my-class-name-inheritance ()
+  "chapter 3.2 slot options :type my-class-name in relation to inheritance"
+  (let* ((vader (pekobj-slot-options))
+	 ;; a child can contain an instance of a parent class
+	 (luke (pekobj-slot-options-child :type-own-class vader))
+	 ;; a parent class can contain an instance of a child class
+	 (portman (pekobj-slot-options :type-own-class luke)))))

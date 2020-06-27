@@ -84,3 +84,13 @@
     (should (equal (oref leia :alloc-instance) "leia"))
     (should (equal (oref luke alloc-class) "now leia!"))
     (should (equal (oref leia alloc-class) "now leia!"))))
+
+(defclass pekobj-slot-options-accessor ()
+  ((pek-init-arg :initarg :my-init-arg
+		 :initform "default"
+		 :accessor access-init-arg)))
+
+(ert-deftest test-pekobj-slot-options-accessor ()
+  (let ((pekobj (pekobj-slot-options-accessor :my-init-arg "override")))
+    (should (equal (access-init-arg pekobj) "override"))
+    (should (equal (oref pekobj pek-init-arg) "override"))))

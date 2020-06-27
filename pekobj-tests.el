@@ -222,3 +222,36 @@
     (should (equal (oref pekobj mylist) '(convenience feature)))
     (oset pekobj mylist '(not exactly more difficult))
     (should (equal (oref pekobj mylist) '(not exactly more difficult)))))
+
+(defclass pekobj-writing-methods-methods ()
+  ((mylist :initarg :mylist
+	   :initform ()
+	   :type list)))
+(cl-defmethod pekobj-method :around ((pekobj pekobj-writing-methods-methods))
+  (object-add-to-list pekobj :mylist 'around-pre t)
+  (cl-call-next-method)
+  (object-add-to-list pekobj :mylist 'around-post t))
+(cl-defmethod pekobj-method :before ((pekobj pekobj-writing-methods-methods))
+  (object-add-to-list pekobj :mylist 'before t))
+(cl-defmethod pekobj-method ((pekobj pekobj-writing-methods-methods))
+  (object-add-to-list pekobj :mylist 'primary t))
+(cl-defmethod pekobj-method :after ((pekobj pekobj-writing-methods-methods))
+  (object-add-to-list pekobj :mylist 'after t))
+(ert-deftest test-pekobj-writing-methods-methods ()
+  (let ((pekobj (pekobj-writing-methods-methods)))
+    (pekobj-method pekobj)
+    (should (equal (oref pekobj :mylist) '(around-pre before primary after around-post)))))
+
+(defclass pekobj-writing-methods-static-methods ()
+  ((name :initarg :name
+	 :initform ""
+	 :type string)))
+
+;; clarifying that 'myclass' is a variable name, while 'subclass' is a keyword
+(cl-defmethod pekobj-static-method ((myclass (subclass pekobj-writing-methods-static-methods)))
+  (oset-default myclass :name "[unknown]"))
+
+(ert-deftest test-pekobj-writing-methods-static-methods ()
+  (let ((pekobj (pekobj-writing-methods-static-methods)))
+    (pekobj-static-method pekobj-writing-methods-static-methods)
+    (should (equal (oref-default pekobj-writing-methods-static-methods :name) "[unknown]"))))

@@ -130,3 +130,40 @@
     (should (equal (oref pekobj pek-init-arg) "eieio"))))
 
 ;; note: skipping :custom, :label, and :group (for now)
+
+(defclass pekobj-class-options-doc
+  () ;; superclass-list
+  () ;; slot-list
+  "Old school documentation string"
+  ;; &rest options-and-doc
+  :documentation "eieio documentation string (old school has precedence)")
+
+(ert-deftest test-pekobj-class-options-doc ()
+  (should (string-prefix-p
+	   "Old school"
+	   (documentation-property 'pekobj-class-options-doc 'variable-documentation))))
+
+(defclass pekobj-class-options-initform ()
+  ((name :initarg :name
+	 :initform nil
+	 :type string))
+  ;; the actual test is that this compiles; if this nil, compilation explodes
+  :allow-nil-initform t)
+
+(ert-deftest test-pekobj-class-options-initform ()
+  (let ((pekobj (pekobj-class-options-initform)))
+    (should (equal nil (oref pekobj name)))))
+
+(defclass pekobj-class-options-abstract () ()
+  :abstract t)
+
+;; tricky: the error doesn't really throw a :type that can be caught by "should-error"
+(ert-deftest test-pekobj-class-options-abstract ()
+  (condition-case err
+      (pekobj-class-options-abstract)
+    ;; here we are handling the standard error known as "error" (and not throwing an error)
+    (error (should (equal "Class pekobj-class-options-abstract is abstract"
+			  (error-message-string err))))))
+
+;; note: skipping :custom-groups
+;; also skipping :method-invocation-order, which controls multiple inheritance

@@ -255,3 +255,50 @@
   (let ((pekobj (pekobj-writing-methods-static-methods)))
     (pekobj-static-method pekobj-writing-methods-static-methods)
     (should (equal (oref-default pekobj-writing-methods-static-methods :name) "[unknown]"))))
+
+(ert-deftest test-pekobj-predicates ()
+  ;; reusing the class from earlier, because it allows for an unbound slot
+  (let* ((myclass-symbol 'pekobj-class-options-initform)
+	 (myclass-string (symbol-name myclass-symbol))
+	 (myclass (find-class myclass-symbol))
+	 (classname (eieio-class-name myclass))
+	 (pekobj (make-instance classname :name "pek"))
+	 (luke (luke-class)))
+    (should (class-p myclass))
+    (should (equal classname myclass-symbol))
+
+    ;; TODO: DRY
+    (should (slot-exists-p myclass 'name))
+    (should-not (slot-exists-p myclass 'does-not-exist))
+    (should (slot-exists-p pekobj 'name))
+    (should-not (slot-exists-p pekobj 'does-not-exist))
+
+    (should (slot-boundp pekobj :name))
+    (slot-makeunbound pekobj :name)
+    (should-not (slot-boundp pekobj :name))
+    (oset pekobj :name "pek")
+    (should (equal (eieio-class-name myclass) myclass-symbol))
+    ;; note: class-option does not exist (in emacs 26.3)
+    (should (eieio--class-option myclass :allow-nil-initform))
+    (should (equal (eieio-object-name pekobj)
+		   (concat "#<" myclass-string " " myclass-string ">")))
+    ;; returns a symbol, but docs say returns a "class struct", whatever that is
+    (should (equal (eieio-object-class pekobj) myclass-symbol))
+    ;; are these two any different?
+    (should (equal (eieio-object-class-name pekobj) myclass-symbol))
+    (should-not (eieio-class-parent myclass))
+    ;; note: the 'luke-class' uses multiple inheritance
+    (should (equal (eieio-class-parent luke-class)
+		   (find-class 'father)))
+    (let ((parents (eieio-class-parents luke-class)))
+      (should (equal (car parents) (find-class 'father)))
+      (should (equal (cadr parents) (find-class 'mother))))
+    ;; note: the docs mention three different '-fast' methods that do not exist
+    (let ((children (eieio-class-children 'father)))
+      (should (equal (car children) 'leia-class))
+      (should (equal (cadr children) 'luke-class)))
+    (should (same-class-p pekobj 'pekobj-class-options-initform))
+    (should (object-of-class-p luke father))
+    (should (child-of-class-p luke-class father))
+    ;; function generic-p does not exist
+    ))

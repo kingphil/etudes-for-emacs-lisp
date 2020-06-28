@@ -297,10 +297,10 @@
     (should-not (eieio-class-parent myclass))
     ;; note: the 'luke-class' uses multiple inheritance
     (should (equal (eieio-class-parent luke-class)
-		   (find-class 'father)))
+		   (find-class #'father)))
     (let ((parents (eieio-class-parents luke-class)))
-      (should (equal (car parents) (find-class 'father)))
-      (should (equal (cadr parents) (find-class 'mother))))
+      (should (equal (car parents) (find-class #'father)))
+      (should (equal (cadr parents) (find-class #'mother))))
     ;; note: the docs mention three different '-fast' methods that do not exist
     (let ((children (eieio-class-children 'father)))
       (should (equal (car children) 'leia-class))

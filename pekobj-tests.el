@@ -1,5 +1,8 @@
 (require 'eieio-base)
 
+;; for 'eieio-build-class-alist'
+(require 'eieio-opt)
+
 ;; eieio-named
 (defclass pekobj-named (eieio-named) ())
 
@@ -302,3 +305,22 @@
     (should (child-of-class-p luke-class father))
     ;; function generic-p does not exist
     ))
+
+(defclass person ()
+  ((birthday :initarg :birthday
+	     :initform "Jan 1, 1970"
+	     :type string)))
+
+(ert-deftest test-pekobj-assoc-lists ()
+  (let* ((star-wars-bday "a long time ago in a galaxy far, far away...")
+	 (luke (person :birthday star-wars-bday))
+	 (leia (person :birthday star-wars-bday))
+	 (yoda (person :birthday "896 BBY"))
+	 (character-list (list yoda luke leia))
+	 (peklist (eieio-build-class-alist 'father)))
+    ;; object-assoc returns the first object that matches; not a list
+    (should (equal luke (object-assoc star-wars-bday :birthday character-list)))
+    ;; who needs this function? kind of silly...
+    (should (equal 3 (length (object-assoc-list :birthday character-list))))
+    (should (equal 3 (length peklist)))
+    (should (listp peklist))))

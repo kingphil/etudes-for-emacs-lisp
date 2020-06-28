@@ -378,3 +378,9 @@
     (delete-instance pekobj-1)
     (should (equal 2 (length tracker-list)))
     (should (equal pekobj-3 (eieio-instance-tracker-find "pek" :name 'tracker-list)))))
+
+(ert-deftest test-pekobj-singleton ()
+  (defclass singleton (eieio-singleton) ())
+  (let ((pekobj-1 (singleton))
+	(pekobj-2 (singleton)))
+    (should (equal pekobj-1 pekobj-2))))

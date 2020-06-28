@@ -330,3 +330,13 @@
     (should (equal 3 (length (object-assoc-list :birthday character-list))))
     (should (equal 3 (length peklist)))
     (should (listp peklist))))
+
+;; note: skipping anything regarding customizations
+
+(ert-deftest test-pekobj-introspection ()
+  (let* ((luke (person))
+	 (slots (object-slots luke))
+	 (person-class (find-class #'person)))
+    (should (listp slots))
+    (should (equal (car slots) #'birthday))
+    (should (equal :birthday (eieio--class-slot-initarg person-class #'birthday)))))

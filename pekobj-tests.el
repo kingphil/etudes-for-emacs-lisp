@@ -384,3 +384,12 @@
   (let ((pekobj-1 (singleton))
 	(pekobj-2 (singleton)))
     (should (equal pekobj-1 pekobj-2))))
+
+;; TODO: need to find a way to mock out the side effect on the filesystem
+(if nil
+    (progn
+      (defclass persistent (eieio-persistent)
+	((name :initarg :name)))
+      (let ((pekobj (persistent :file "./phil" :name "pek")))
+	(eieio-persistent-save pekobj)
+	(eieio-persistent-read "./phil" persistent))))

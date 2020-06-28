@@ -153,7 +153,7 @@
   ((name :initarg :name
 	 :initform nil
 	 :type string))
-  ;; the actual test is that this compiles; if this nil, compilation explodes
+  ;; the actual test is that this compiles; if this is nil, compilation explodes
   :allow-nil-initform t)
 
 (ert-deftest test-pekobj-class-options-initform ()
@@ -163,11 +163,11 @@
 (defclass pekobj-class-options-abstract () ()
   :abstract t)
 
-;; tricky: the error doesn't really throw a :type that can be caught by "should-error"
+;; tricky: the error doesn't seem to throw a :type that can be caught by "should-error"
 (ert-deftest test-pekobj-class-options-abstract ()
   (condition-case err
       (pekobj-class-options-abstract)
-    ;; here we are handling the standard error known as "error" (and not throwing an error)
+    ;; here we are handling the standard error known as "error" (meaning, this isn't throwing an error)
     (error (should (equal "Class pekobj-class-options-abstract is abstract"
 			  (error-message-string err))))))
 
@@ -243,6 +243,7 @@
   (object-add-to-list pekobj :mylist 'primary t))
 (cl-defmethod pekobj-method :after ((pekobj pekobj-writing-methods-methods))
   (object-add-to-list pekobj :mylist 'after t))
+
 (ert-deftest test-pekobj-writing-methods-methods ()
   (let ((pekobj (pekobj-writing-methods-methods)))
     (pekobj-method pekobj)
@@ -253,7 +254,7 @@
 	 :initform ""
 	 :type string)))
 
-;; clarifying that 'myclass' is a variable name, while 'subclass' is a keyword
+;; 'myclass' is a variable name; 'subclass' is a keyword
 (cl-defmethod pekobj-static-method ((myclass (subclass pekobj-writing-methods-static-methods)))
   (oset-default myclass :name "[unknown]"))
 

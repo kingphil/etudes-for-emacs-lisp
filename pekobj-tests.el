@@ -355,3 +355,26 @@
     (should (equal "today!" (oref pekobj-1 :birthday)))
     (should (equal "today!" (oref pekobj-2 :birthday)))
     (should (equal "[unknown]" (oref pekobj-3 :birthday)))))
+
+(defclass tracker (eieio-instance-tracker)
+  ;; mandatory slot for this class to work
+  ((tracking-symbol :initform tracker-list)
+   (name :initarg :name
+	 :initform "pek"
+	 :type string)))
+
+(ert-deftest test-pekobj-instance-tracker ()
+  (let* ((tracker-list)
+	 (pekobj-1 (tracker))
+	 (pekobj-2 (tracker :name "not-pek"))
+	 (pekobj-3 (tracker))
+	 ;; super odd that you pass in the symbol name of the tracking variable,
+	 ;;   and not the variable itself (or is that how elisp does pass-by-reference?)
+	 (filtered (eieio-instance-tracker-find "pek" :name 'tracker-list)))
+    (should (equal filtered pekobj-1))
+    ;; consider this an anti-test; I think that the dead object is
+    ;;   still in the tracker variable is a horrible misfeature
+    (should (equal 3 (length tracker-list)))
+    (delete-instance pekobj-1)
+    (should (equal 2 (length tracker-list)))
+    (should (equal pekobj-3 (eieio-instance-tracker-find "pek" :name 'tracker-list)))))

@@ -3,6 +3,9 @@
 ;; for 'eieio-build-class-alist'
 (require 'eieio-opt)
 
+;; for 'generic-p'
+(require 'eieio-compat)
+
 ;; eieio-named
 (defclass pekobj-named (eieio-named) ())
 
@@ -259,6 +262,8 @@
     (pekobj-static-method pekobj-writing-methods-static-methods)
     (should (equal (oref-default pekobj-writing-methods-static-methods :name) "[unknown]"))))
 
+(cl-defgeneric pekobj-generic ())
+
 (ert-deftest test-pekobj-predicates ()
   ;; reusing the class from earlier, because it allows for an unbound slot
   (let* ((myclass-symbol 'pekobj-class-options-initform)
@@ -303,8 +308,9 @@
     (should (same-class-p pekobj 'pekobj-class-options-initform))
     (should (object-of-class-p luke father))
     (should (child-of-class-p luke-class father))
-    ;; function generic-p does not exist
-    ))
+    ;; TODO: more tests around the eieio concept of generics; the
+    ;;   docstring makes reference to a default body (not documented)
+    (generic-p #'pekobj-generic)))
 
 (defclass person ()
   ((birthday :initarg :birthday

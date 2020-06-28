@@ -341,3 +341,17 @@
     (should (listp slots))
     (should (equal (car slots) #'birthday))
     (should (equal :birthday (eieio--class-slot-initarg person-class #'birthday)))))
+
+(ert-deftest test-pekobj-introspection ()
+  ;; reminds me of Javascript's prototype-based object system
+  (defclass prototype (eieio-instance-inheritor)
+    ((birthday :initarg :birthday
+	       :initform "Jan 1, 1970"
+	       :type string)))
+  (let* ((pekobj-1 (prototype))
+	 (pekobj-2 (clone pekobj-1))
+	 (pekobj-3 (clone pekobj-1 :birthday "[unknown]")))
+    (oset pekobj-1 :birthday "today!")
+    (should (equal "today!" (oref pekobj-1 :birthday)))
+    (should (equal "today!" (oref pekobj-2 :birthday)))
+    (should (equal "[unknown]" (oref pekobj-3 :birthday)))))

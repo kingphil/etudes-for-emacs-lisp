@@ -231,7 +231,7 @@
   (object-add-to-list pekobj :mylist 'after t))
 
 (cl-defmethod pekobj-method-for-signal ((pekobj pekobj-writing-methods-methods))
-  (call-next-method))
+  (cl-call-next-method))
 
 (ert-deftest test-pekobj-writing-methods-methods ()
   (let ((pekobj (pekobj-writing-methods-methods)))

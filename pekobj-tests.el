@@ -230,6 +230,9 @@
 (cl-defmethod pekobj-method :after ((pekobj pekobj-writing-methods-methods))
   (object-add-to-list pekobj :mylist 'after t))
 
+(cl-defmethod pekobj-method-for-signal ((pekobj pekobj-writing-methods-methods))
+  (call-next-method))
+
 (ert-deftest test-pekobj-writing-methods-methods ()
   (let ((pekobj (pekobj-writing-methods-methods)))
     (pekobj-method pekobj)
@@ -393,3 +396,13 @@
       (eieio-object-set-name-string pekobj my-obj-rename)
       (should (equal (oref pekobj :object-name) my-obj-rename)))))
 
+;; TODO: once I grok eieio internals, redo sections 15.1-15.3
+
+(ert-deftest test-pekobj-signals ()
+  (let ((pekobj (pekobj-named)))
+    (should-error (oref pekobj :beefcake) :type 'invalid-slot-name)
+    (should-error (pekobj-generic 'beefcake) :type 'cl-no-applicable-method)
+    ;; TODO: cl-no-primary-method
+    (should-error (pekobj-method-for-signal (pekobj-writing-methods-methods)) :type 'cl-no-next-method)
+    (should-error (funcall (lambda () (pekobj-class-options-initform :name 2020))) :type 'invalid-slot-type)
+    (should-error (oref (pekobj-slot-options) :no-initform) :type 'unbound-slot)))

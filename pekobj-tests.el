@@ -37,7 +37,7 @@
 
 (ert-deftest test-pekobj-inheritance ()
   (let ((luke (luke-class))
-	(leia (leia-class)))
+        (leia (leia-class)))
     ;; "If my-baseclass and my-interface had slots with the same name, then the
     ;; superclass showing up in the list first defines the slot attributes."
     (should (equal (oref luke parent) "vader"))
@@ -49,18 +49,18 @@
 (defclass pekobj-slot-options ()
   ((no-initform :initarg :no-initform)
    (initform :initarg :initform
-	     :initform "default")
+             :initform "default")
    (type-symbol :initarg :type-symbol
-		:type symbol)
+                :type symbol)
    (type-own-class :initarg :type-own-class
-		   ;; not a literal "my-class-name" as suggested in the docs
-		   :type pekobj-slot-options)
+                   ;; not a literal "my-class-name" as suggested in the docs
+                   :type pekobj-slot-options)
    ;; TODO: I don't understand where/how "alloc-instance" is used, considering I do understand
    ;;   how "alloc-class" is referenced; why are they different?
    (alloc-instance :initarg :alloc-instance
-		   :allocation :instance)
+                   :allocation :instance)
    ;; "Class allocated slots do not need :initarg"
-   (alloc-class	:allocation :class)))
+   (alloc-class :allocation :class)))
 
 (ert-deftest test-pekobj-slot-options-initform ()
   "chapter 3.2 slot options :initform"
@@ -79,9 +79,9 @@
 (ert-deftest test-pekobj-slot-options-type-my-class-name ()
   "chapter 3.2 slot options :type my-class-name"
   (let* ((pekobj-1 (pekobj-slot-options))
-	 ;; no real test here; asserts that it doesn't error out (that I got the concept and syntax right)
-	 (pekobj-2 (pekobj-slot-options :type-own-class pekobj-1))
-	 (minimal (pekobj-minimal)))
+         ;; no real test here; asserts that it doesn't error out (that I got the concept and syntax right)
+         (pekobj-2 (pekobj-slot-options :type-own-class pekobj-1))
+         (minimal (pekobj-minimal)))
     (should-error (pekobj-slot-options :type-own-class 2020) :type 'invalid-slot-type)
     (should-error (pekobj-slot-options :type-own-class minimal) :type 'invalid-slot-type)))
 
@@ -90,15 +90,15 @@
 (ert-deftest test-pekobj-slot-options-type-my-class-name-inheritance ()
   "chapter 3.2 slot options :type my-class-name in relation to inheritance"
   (let* ((vader (pekobj-slot-options))
-	 ;; a child can contain an instance of a parent class
-	 (luke (pekobj-slot-options-child :type-own-class vader))
-	 ;; a parent class can contain an instance of a child class
-	 (portman (pekobj-slot-options :type-own-class luke)))))
+         ;; a child can contain an instance of a parent class
+         (luke (pekobj-slot-options-child :type-own-class vader))
+         ;; a parent class can contain an instance of a child class
+         (portman (pekobj-slot-options :type-own-class luke)))))
 
 (ert-deftest test-pekobj-slot-options-allocation ()
   "chapter 3.2 slot options :allocation"
   (let ((luke (pekobj-slot-options :alloc-instance "luke"))
-	(leia (pekobj-slot-options :alloc-instance "leia")))
+        (leia (pekobj-slot-options :alloc-instance "leia")))
     (oset luke alloc-class "now leia!")
     (should (equal (oref luke :alloc-instance) "luke"))
     (should (equal (oref leia :alloc-instance) "leia"))
@@ -107,10 +107,10 @@
 
 (defclass pekobj-slot-options-accessor ()
   ((pek-init-arg :initarg :my-init-arg
-		 :initform "default"
-		 :accessor access-init-arg
-		 :writer write-init-arg
-		 :reader read-init-arg)))
+                 :initform "default"
+                 :accessor access-init-arg
+                 :writer write-init-arg
+                 :reader read-init-arg)))
 
 (ert-deftest test-pekobj-slot-options-accessor ()
   (let ((pekobj (pekobj-slot-options-accessor :my-init-arg "override")))
@@ -132,13 +132,13 @@
 
 (ert-deftest test-pekobj-class-options-doc ()
   (should (string-prefix-p
-	   "Old school"
-	   (documentation-property 'pekobj-class-options-doc 'variable-documentation))))
+           "Old school"
+           (documentation-property 'pekobj-class-options-doc 'variable-documentation))))
 
 (defclass pekobj-class-options-initform ()
   ((name :initarg :name
-	 :initform nil
-	 :type string))
+         :initform nil
+         :type string))
   ;; the actual test is that this compiles; if this is nil, compilation explodes
   :allow-nil-initform t)
 
@@ -155,7 +155,7 @@
       (pekobj-class-options-abstract)
     ;; here we are handling the standard error known as "error" (meaning, this isn't throwing an error)
     (error (should (equal "Class pekobj-class-options-abstract is abstract"
-			  (error-message-string err))))))
+                          (error-message-string err))))))
 
 ;; note: skipping :custom-groups
 ;; also skipping :method-invocation-order, which controls multiple inheritance
@@ -164,15 +164,15 @@
   ;; define this class as an "inner class" so that the oset-default does not explode subsequent test runs
   (defclass pekobj-accessing-slots ()
     ((name :initarg :name
-	   :initform "[anonymous]"
-	   :type string
-	   :documentation "The name of a person.")))
+           :initform "[anonymous]"
+           :type string
+           :documentation "The name of a person.")))
   (let ((pekobj (pekobj-accessing-slots)))
     (should (equal (oref-default pekobj-accessing-slots :name) "[anonymous]"))
     (should (equal (oref pekobj :name) "[anonymous]"))
     (should (equal (oref pekobj :name)
-		   ;; both 'name and :name work here, as seen below
-		   (slot-value pekobj :name)))
+                   ;; both 'name and :name work here, as seen below
+                   (slot-value pekobj :name)))
     (oset-default pekobj-accessing-slots :name "[unknown]")
     ;; existing instances have not changed
     (should (equal (slot-value pekobj 'name) "[anonymous]"))
@@ -190,8 +190,8 @@
 
 (defclass pekobj-accessing-slots-slot-lists ()
   ((mylist :initarg :mylist
-	 :initform '(this is a test)
-	 :type list)))
+           :initform '(this is a test)
+           :type list)))
 
 ;; appending to an object attribute that is a list must happen so frequently that this convenience was needed
 (ert-deftest test-pekobj-accessing-slots-slot-lists ()
@@ -199,7 +199,7 @@
     ;; the true value on the end is to instruct the method to append to the list
     (object-add-to-list pekobj :mylist '(of the emergency system) t)
     (should (equal (oref pekobj mylist)
-		   '(this is a test (of the emergency system))))
+                   '(this is a test (of the emergency system))))
     (object-remove-from-list pekobj :mylist '(of the emergency system))
     (should (equal (oref pekobj mylist) '(this is a test)))))
 
@@ -217,8 +217,8 @@
 
 (defclass pekobj-writing-methods-methods ()
   ((mylist :initarg :mylist
-	   :initform ()
-	   :type list)))
+           :initform ()
+           :type list)))
 (cl-defmethod pekobj-method :around ((pekobj pekobj-writing-methods-methods))
   (object-add-to-list pekobj :mylist 'around-pre t)
   (cl-call-next-method)
@@ -240,8 +240,8 @@
 
 (defclass pekobj-writing-methods-static-methods ()
   ((name :initarg :name
-	 :initform ""
-	 :type string)))
+         :initform ""
+         :type string)))
 
 ;; 'myclass' is a variable name; 'subclass' is a keyword
 (cl-defmethod pekobj-static-method ((myclass (subclass pekobj-writing-methods-static-methods)))
@@ -257,11 +257,11 @@
 (ert-deftest test-pekobj-predicates ()
   ;; reusing the class from earlier, because it allows for an unbound slot
   (let* ((myclass-symbol 'pekobj-class-options-initform)
-	 (myclass-string (symbol-name myclass-symbol))
-	 (myclass (find-class myclass-symbol))
-	 (classname (eieio-class-name myclass))
-	 (pekobj (make-instance classname :name "pek"))
-	 (luke (luke-class)))
+         (myclass-string (symbol-name myclass-symbol))
+         (myclass (find-class myclass-symbol))
+         (classname (eieio-class-name myclass))
+         (pekobj (make-instance classname :name "pek"))
+         (luke (luke-class)))
     (should (class-p myclass))
     (should (equal classname myclass-symbol))
 
@@ -279,7 +279,7 @@
     ;; note: class-option does not exist (in emacs 26.3)
     (should (eieio--class-option myclass :allow-nil-initform))
     (should (equal (eieio-object-name pekobj)
-		   (concat "#<" myclass-string " " myclass-string ">")))
+                   (concat "#<" myclass-string " " myclass-string ">")))
     ;; returns a symbol, but docs say returns a "class struct", whatever that is
     (should (equal (eieio-object-class pekobj) myclass-symbol))
     ;; are these two any different?
@@ -287,7 +287,7 @@
     (should-not (eieio-class-parent myclass))
     ;; note: the 'luke-class' uses multiple inheritance
     (should (equal (eieio-class-parent luke-class)
-		   (find-class #'father)))
+                   (find-class #'father)))
     (let ((parents (eieio-class-parents luke-class)))
       (should (equal (car parents) (find-class #'father)))
       (should (equal (cadr parents) (find-class #'mother))))
@@ -304,16 +304,16 @@
 
 (defclass person ()
   ((birthday :initarg :birthday
-	     :initform "Jan 1, 1970"
-	     :type string)))
+             :initform "Jan 1, 1970"
+             :type string)))
 
 (ert-deftest test-pekobj-assoc-lists ()
   (let* ((star-wars-bday "a long time ago in a galaxy far, far away...")
-	 (luke (person :birthday star-wars-bday))
-	 (leia (person :birthday star-wars-bday))
-	 (yoda (person :birthday "896 BBY"))
-	 (character-list (list yoda luke leia))
-	 (peklist (eieio-build-class-alist 'father)))
+         (luke (person :birthday star-wars-bday))
+         (leia (person :birthday star-wars-bday))
+         (yoda (person :birthday "896 BBY"))
+         (character-list (list yoda luke leia))
+         (peklist (eieio-build-class-alist 'father)))
     ;; object-assoc returns the first object that matches; not a list
     (should (equal luke (object-assoc star-wars-bday :birthday character-list)))
     ;; who needs this function? kind of silly...
@@ -325,8 +325,8 @@
 
 (ert-deftest test-pekobj-introspection ()
   (let* ((luke (person))
-	 (slots (object-slots luke))
-	 (person-class (find-class #'person)))
+         (slots (object-slots luke))
+         (person-class (find-class #'person)))
     (should (listp slots))
     (should (equal (car slots) #'birthday))
     (should (equal :birthday (eieio--class-slot-initarg person-class #'birthday)))))
@@ -335,11 +335,11 @@
   ;; reminds me of Javascript's prototype-based object system
   (defclass prototype (eieio-instance-inheritor)
     ((birthday :initarg :birthday
-	       :initform "Jan 1, 1970"
-	       :type string)))
+               :initform "Jan 1, 1970"
+               :type string)))
   (let* ((pekobj-1 (prototype))
-	 (pekobj-2 (clone pekobj-1))
-	 (pekobj-3 (clone pekobj-1 :birthday "[unknown]")))
+         (pekobj-2 (clone pekobj-1))
+         (pekobj-3 (clone pekobj-1 :birthday "[unknown]")))
     (oset pekobj-1 :birthday "today!")
     (should (equal "today!" (oref pekobj-1 :birthday)))
     (should (equal "today!" (oref pekobj-2 :birthday)))
@@ -349,17 +349,17 @@
   ;; mandatory slot for this class to work
   ((tracking-symbol :initform tracker-list)
    (name :initarg :name
-	 :initform "pek"
-	 :type string)))
+         :initform "pek"
+         :type string)))
 
 (ert-deftest test-pekobj-instance-tracker ()
   (let* ((tracker-list)
-	 (pekobj-1 (tracker))
-	 (pekobj-2 (tracker :name "not-pek"))
-	 (pekobj-3 (tracker))
-	 ;; super odd that you pass in the symbol name of the tracking variable,
-	 ;;   and not the variable itself (or is that how elisp does pass-by-reference?)
-	 (filtered (eieio-instance-tracker-find "pek" :name 'tracker-list)))
+         (pekobj-1 (tracker))
+         (pekobj-2 (tracker :name "not-pek"))
+         (pekobj-3 (tracker))
+         ;; super odd that you pass in the symbol name of the tracking variable,
+         ;;   and not the variable itself (or is that how elisp does pass-by-reference?)
+         (filtered (eieio-instance-tracker-find "pek" :name 'tracker-list)))
     (should (equal filtered pekobj-1))
     ;; consider this an anti-test; I think that the dead object is
     ;;   still in the tracker variable is a horrible misfeature
@@ -371,25 +371,25 @@
 (ert-deftest test-pekobj-singleton ()
   (defclass singleton (eieio-singleton) ())
   (let ((pekobj-1 (singleton))
-	(pekobj-2 (singleton)))
+        (pekobj-2 (singleton)))
     (should (equal pekobj-1 pekobj-2))))
 
 ;; TODO: need to find a way to mock out the side effect on the filesystem
 (if nil
     (progn
       (defclass persistent (eieio-persistent)
-	((name :initarg :name)))
+        ((name :initarg :name)))
       (let ((pekobj (persistent :file "./phil" :name "pek")))
-	(eieio-persistent-save pekobj)
-	(eieio-persistent-read "./phil" persistent))))
+        (eieio-persistent-save pekobj)
+        (eieio-persistent-read "./phil" persistent))))
 
 (defclass pekobj-named (eieio-named) ())
 
 (ert-deftest test-pekobj-named ()
   "Basic test of 'eieio-named' class"
   (let* ((my-obj-name "pekobj-named")
-	 (my-obj-rename "pekobj-renamed")
-	 (pekobj (pekobj-named :object-name my-obj-name)))
+         (my-obj-rename "pekobj-renamed")
+         (pekobj (pekobj-named :object-name my-obj-name)))
     (progn
       (should (equal (oref pekobj :object-name) my-obj-name))
       (should-error (eieio-object-set-name-string pekobj 'must-be-string) :type 'wrong-type-argument)

@@ -279,7 +279,7 @@
     ;; note: class-option does not exist (in emacs 26.3)
     (should (eieio--class-option myclass :allow-nil-initform))
     (should (equal (eieio-object-name pekobj)
-                   (concat "#<" myclass-string " " myclass-string ">")))
+                   (concat "#<" myclass-string " " (eieio-object-name-string pekobj) ">")))
     ;; returns a symbol, but docs say returns a "class struct", whatever that is
     (should (equal (eieio-object-class pekobj) myclass-symbol))
     ;; are these two any different?

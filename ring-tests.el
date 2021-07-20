@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(add-to-list 'load-path "./")
+
 (require 'ert)
 (require 'ring)
 

@@ -70,8 +70,7 @@
 
 (defun ring-plus1 (index veclen)
   "Return INDEX+1, with wraparound."
-  (let ((new-index (1+ index)))
-    (if (= new-index veclen) 0 new-index)))
+  (% (1+ index) veclen))
 
 (defun ring-minus1 (index veclen)
   "Return INDEX-1, with wraparound."

@@ -74,7 +74,8 @@
 
 (defun ring-minus1 (index veclen)
   "Return INDEX-1, with wraparound."
-  (- (if (zerop index) veclen index) 1))
+  (let ((new-index (if (zerop index) veclen index)))
+    (1- new-index)))
 
 (defun ring-length (ring)
   "Return the number of elements in the RING."

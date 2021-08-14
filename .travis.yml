@@ -19,7 +19,6 @@ git:
 branches:
   only:
   - master
-  - /^90\./
 notifications:
   email:
     on_success: always

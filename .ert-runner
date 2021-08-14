@@ -1,0 +1,2 @@
+-l pekobj-tests.el ring-tests.el
+--reporter ert

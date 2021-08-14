@@ -3,4 +3,5 @@ image: flycheck/emacs-cask:27.1
 test:
   stage: test
   script:
-    - ./ci/runtests.sh
+    - ./ci/install-requirements.sh
+    #- ./ci/runtests.sh
